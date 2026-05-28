@@ -1,0 +1,18 @@
+- [Justfile shebang indentation](feedback_justfile_shebang_indent.md) — shebang recipe lines must share a common indent; column-0 body lines break parsing, don't blame the embedded language
+- [Handoff release flow (atomic)](project_release_flow.md) — `just release` now ships the plugin AND bumps the marketplace entry atomically (plugin-dev v0.2.0+); needs MARKETPLACE_DIR via .envrc
+- [Release flow naming](feedback_release_flow_naming.md) — name both `handoff` and `claude-plugins` up front when releasing, so auto-mode auth covers the marketplace push
+- [Harness over agent](feedback_harness_over_agent.md) — first rule of skill design: deterministic mechanical work belongs in hooks, not in the skill body
+- [Hook deny wording](feedback_hook_deny_wording.md) — agent-facing deny messages must not contain actionable phrases; agents read "if you need X, run Y" as instructions
+- [Hook output channels](feedback_hook_agent_feedback.md) — `systemMessage` is user-facing; agents need `additionalContext` (or stderr) or they'll redundantly verify with `ls`/`cat`
+- [claude-plugin-dev toolkit](project_claude_plugin_dev.md) — shared release infra for ddaa's plugins; v0.2.0 added VERSION file SOT, self-release recipe, marketplace bump in consumer release
+- [tmux CC mode + popups](feedback_tmux_cc_popup.md) — `tmux display-popup` invisible in iTerm2 `-CC` mode; use `tmux new-window` for interactive TUI overlays
+- [revdiff plugin](reference_revdiff_plugin.md) — `revdiff@revdiff` installed for in-session diff review via `/revdiff:revdiff`; empty annotations = approved
+- [JSONL sidechain segregation](project_jsonl_sidechain_segregation.md) — main session JSONLs don't interleave sidechains (verified 2026-05-17); sub-agents live in `archived/agent-*.jsonl`
+- [systemMessage style](feedback_systemmessage_style.md) — user-visible hook output is curt + informative: lowercase, em-dash, factual, no instructions
+- [Token counting (2026)](reference_token_counting.md) — Anthropic has no exact offline tokenizer for Claude 3+; cc-token is maturest CLI with cache; for small artifacts prefer bytes over API tokens
+- [Design doc immutability](feedback_design_doc_immutability.md) — design docs capture thinking at write-time, not current best answer; when rationale looks thin, re-examine and be willing to invert
+- [Test automation 80/20](feedback_test_automation_8020.md) — if you've spent 80% writing tests, the 20% to automate is a small markup; default to assertion-based shell tests, not agent-driven
+- [TDD red/green separation](feedback_tdd_red_green_separation.md) — in subagent plan execution, never bundle a red-task into a green-task subagent; the red-phase review is what proves the test exercises the change
+- [git status unsandboxed](feedback_git_status_unsandboxed.md) — sandbox materializes home dotfiles into cwd; run `git status`/`diff` with `dangerouslyDisableSandbox: true` so the output isn't 14 lines of noise
+- [JSONL slash-command shape](reference_jsonl_slash_command_shape.md) — slash commands are a `<command-name>/foo:bar</command-name>` wrapper string in a user entry (not literal text or a Skill tool_use); agent-invoked skills are Skill tool_use blocks; skill *bodies* inject as `isMeta:true` user entries on both paths — `isMeta` is the structural flag for all harness-injected content
+- [bg session no /dev/tty](feedback_bg_session_no_tty.md) — background sessions can't launch interactive TUIs (revdiff: no /dev/tty); have the user run them and read the history/output instead of retrying the launcher
