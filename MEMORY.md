@@ -19,3 +19,4 @@
 - [CLAUDE_PROJECT_DIR over cwd](feedback_claude_project_dir.md) — hook scripts must use CLAUDE_PROJECT_DIR for project root, not payload cwd; cwd drifts with shell cd and /add-dir
 - [gitlore memory in git](feedback_gitlore_memory.md) — memory/ is tracked by gitlore; commit it with code changes, never gitignore it
 - [autoname plugin removed](project_autoname_removed.md) — removed entirely (repo, marketplace, local); handoff's write-rename.sh is sole rename path
+- [Handoff files are tree-local](feedback_handoff_tree_local.md) — don't relocate to gitlore memory (shared); use git add -f staging in the local project repo instead
