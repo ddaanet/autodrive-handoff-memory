@@ -18,3 +18,4 @@
 - [bg session no /dev/tty](feedback_bg_session_no_tty.md) — background sessions can't launch interactive TUIs (revdiff: no /dev/tty); have the user run them and read the history/output instead of retrying the launcher
 - [CLAUDE_PROJECT_DIR over cwd](feedback_claude_project_dir.md) — hook scripts must use CLAUDE_PROJECT_DIR for project root, not payload cwd; cwd drifts with shell cd and /add-dir
 - [gitlore memory in git](feedback_gitlore_memory.md) — memory/ is tracked by gitlore; commit it with code changes, never gitignore it
+- [autoname plugin removed](project_autoname_removed.md) — removed entirely (repo, marketplace, local); handoff's write-rename.sh is sole rename path
