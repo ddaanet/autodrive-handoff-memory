@@ -22,3 +22,4 @@
 - [Handoff files are tree-local](feedback_handoff_tree_local.md) — don't relocate to gitlore memory (shared); use git add -f staging in the local project repo instead
 - [Review model selection](feedback_review_model_selection.md) — use Sonnet (min) for reviewer subagents; Haiku misses subtle issues regardless of who implemented
 - [No compat aliases](feedback_no_compat_aliases.md) — when removing a constant, patch all consumers directly; compat aliases keep tech debt alive
+- [Hook-driven skill directives](project_hook_driven_skill_directives.md) — PTU magic-file = zero-turn step injection; same-session needs no machinery; cross-session uses handoff+skill+script; explicit signal for ambiguous completion
