@@ -24,7 +24,9 @@
 - [No compat aliases](feedback_no_compat_aliases.md) — when removing a constant, patch all consumers directly; compat aliases keep tech debt alive
 - [Hook-driven skill directives](project_hook_driven_skill_directives.md) — PTU magic-file = zero-turn step injection; same-session needs no machinery; cross-session uses handoff+skill+script; explicit signal for ambiguous completion
 - [ShellCheck lints bats](reference_shellcheck_lints_bats.md) — `.bats` files lint natively (verified 0.10.0); the "adopting bats loses tests/*.sh lint coverage" objection is false; bats already installed
-- [Test suite framework port](project_test_suite_framework_port.md) — bash tests → bats (36 green), extract.py tests → pytest (83 green); reviewed faithful; full integration (justfile + pyproject/uv.lock + cleanups) approved but NOT yet executed
+- [Test suite framework port](project_test_suite_framework_port.md) — bash tests → bats, extract.py tests → pytest; full integration landed in commit db38321 (justfile + pyproject + direnv venv)
 - [bats errexit catches asserts](reference_bats_errexit.md) — bats `@test` bodies run under errexit; mid-body `[ ]`/`[[ ]]`/failing-pipeline aborts the test, so `|| return 1` guards are style not correctness; verified bats 1.11.1
 - [Verify review findings](feedback_verify_review_findings.md) — reproduce a subagent's HIGH/correctness finding with a minimal probe before churning code; escalated style rules masquerade as bugs
 - [uv: sync only, direnv venv](feedback_uv_direnv_venv.md) — no `uv run` under Claude (sandbox/cache pain); `uv sync` only + direnv exports VIRTUAL_ENV & PATH prefix; recipes call bare `pytest`
+- [Hook input schema (2.1.168)](reference_hook_input_schema.md) — base stdin = session_id/transcript_path/cwd/permission_mode?/agent_id?; every event incl SessionStart carries cwd; no worktree-root field; CwdChanged is observational (watchPaths+systemMessage only, no block/additionalContext)
+- [Per-worktree handoff root](project_worktree_handoff_root.md) — bug + design + 6-task plan to anchor hooks on the enclosing worktree root via worktree_root.py; spec & plan in plans/2026-06-09-*; subagent-driven execution pending
