@@ -1,6 +1,6 @@
 ---
 name: project-worktree-handoff-root
-description: "Ongoing fix — anchor handoff hooks on the enclosing git-worktree root so worktree sessions own their own .claude/; design + plan written, execution pending"
+description: "Done (2026-06-09, commits d244e34..5d0145a) — handoff hooks now anchor on the enclosing git-worktree root via worktree_root.py so worktree sessions own their own .claude/; release not yet run"
 metadata: 
   node_type: memory
   type: project
@@ -23,13 +23,11 @@ green. Direct port of cwd-safety's `_worktree_root`. Rejected: raw `.cwd` as roo
 (drift-prone) and recording the root via Worktree/CwdChanged hooks (observational
 + no clean per-worktree storage — see [[reference-hook-input-schema]]).
 
-**Status (2026-06-09):** spec
-`plans/2026-06-09-per-worktree-handoff-root-design.md` and 6-task TDD plan
-`plans/2026-06-09-per-worktree-handoff-root-plan.md` written and self-reviewed.
-Execution is **subagent-driven, next session** (user's choice).
+**Status (2026-06-09):** SHIPPED in 6 commits `d244e34..5d0145a` on `main`.
+Executed **inline with TDD, not subagents** (see [[feedback-subagents-over-applied]])
+— the plan's 6 commit boundaries were kept. Resolutions: empty-cwd guard **kept**
+(`if not cwd: return project`); spec+plan **folded into** the Task 6 docs commit.
+Full suite green (46 bats + 86 pytest). `just release` (version bump, tag,
+marketplace) is the remaining user-driven step — not yet run.
 
-**Open decisions to resolve at execution:** (1) keep vs drop the empty-cwd guard
-in `worktree_root.py` — recommended keep (makes the resolver total +
-CWD-independent; exercised by the existing cwd-less load-handoff bats tests);
-(2) commit spec+plan standalone or fold into the Task 6 docs commit (plan does
-the latter). See [[feedback-claude-project-dir]], [[feedback-handoff-tree-local]].
+See [[feedback-claude-project-dir]], [[feedback-handoff-tree-local]].
