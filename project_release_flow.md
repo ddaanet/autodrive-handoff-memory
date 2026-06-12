@@ -31,7 +31,11 @@ state (entry exists, tree clean) before any destructive op, so a
 misconfigured environment fails fast instead of half-shipping.
 
 **How to apply:** Don't manually edit `marketplace.json` for handoff
-releases. If `MARKETPLACE_DIR` is unset (e.g. sandbox without direnv)
-inline-export it: `MARKETPLACE_DIR=~/code/claude-plugins just release
-patch --yes`. Same pattern will apply to `gitmoji` once it adopts
-plugin-dev v0.2.0+.
+releases. **Always pass `--yes` when the agent runs the release** — the
+recipe has an interactive `read -rp "Release X? [y/N]"` confirmation that,
+under the non-interactive Bash tool, hits EOF and exits 1 *silently* (no
+error line, version unbumped, nothing pushed — looks like a mysterious
+failure but is harmless and pre-bump). `just release minor --yes` skips it.
+If `MARKETPLACE_DIR` is unset (e.g. sandbox without direnv) inline-export
+it too: `MARKETPLACE_DIR=~/code/claude-plugins just release patch --yes`.
+Same pattern will apply to `gitmoji` once it adopts plugin-dev v0.2.0+.
