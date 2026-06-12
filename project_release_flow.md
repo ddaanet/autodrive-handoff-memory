@@ -36,6 +36,10 @@ recipe has an interactive `read -rp "Release X? [y/N]"` confirmation that,
 under the non-interactive Bash tool, hits EOF and exits 1 *silently* (no
 error line, version unbumped, nothing pushed — looks like a mysterious
 failure but is harmless and pre-bump). `just release minor --yes` skips it.
+The recipe signature is `release bump='patch' yes=''`, so `--yes` is the
+**second positional** — it MUST follow the bump. `just release --yes`
+binds `--yes` to `bump` and dies with "unknown bump type: --yes". For a
+patch release write it in full: `just release patch --yes`.
 If `MARKETPLACE_DIR` is unset (e.g. sandbox without direnv) inline-export
 it too: `MARKETPLACE_DIR=~/code/claude-plugins just release patch --yes`.
 Same pattern will apply to `gitmoji` once it adopts plugin-dev v0.2.0+.
