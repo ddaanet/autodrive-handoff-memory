@@ -1,6 +1,6 @@
 ---
 name: project-handoff-gitlore-aware
-description: "handoff proactively commits gitlore memory at wrap-up; gitlore prerequisite SHIPPED, spec+plan written, ready to implement"
+description: "handoff proactively commits gitlore memory at wrap-up; SHIPPED + merged to main (commit 80a0574, 2026-06-12)"
 metadata: 
   node_type: memory
   type: project
@@ -19,17 +19,25 @@ moment avoids drift / redundant reviews.
 **Scope:** commit ONLY memory. "push" = local `live` (`HEAD:live`) only, NOT
 origin — origin push stays with gitlore's ambient `pre-push` hook.
 
-**Status (2026-06-12):**
+**Status (2026-06-12): SHIPPED + merged to `main`** (fast-forward to commit
+`80a0574`). Release not yet run — `just release` ships the minor bump to the
+marketplace when wanted.
 - gitlore prerequisite **SHIPPED**: `commit-memory.sh` (D16), arg-driven
   (`-m`/`-F -`), commits the submodule + advances local `live` with no parent
   commit. Discover via `git config gitlore.commitCommand` (self-healing,
   re-pinned every SessionStart). Activation gate = `gitlore-memory` submodule
   in `.gitmodules` (FR12). Runs without `CLAUDE_PLUGIN_ROOT` (falls back to
   `gitlore.hooksDir`).
-- handoff spec + plan **written**:
-  `docs/superpowers/specs/2026-06-12-gitlore-aware-handoff-design.md`,
-  `docs/superpowers/plans/2026-06-12-gitlore-aware-handoff.md`. 7 TDD tasks.
-  Next session: execute the plan (subagent-driven or inline).
+- handoff implementation **landed**: `scripts/memory-probe.sh` +
+  `bin/handoff-memory-probe` + `tests/memory-probe.bats` (7 cases) wired into
+  the justfile; SKILL.md Step 2/3 wiring; non-tmux rename `additionalContext`
+  fix; docs. Built subagent-driven (spec + code-quality review per task,
+  final holistic review).
+- **Plan was critically simplified 7→3 tasks before execution** (probe+shim+
+  wiring as one coupled TDD unit; rename fix; skill+docs; verification inline
+  not dispatched) — applied/validated [[feedback-subagents-over-applied]]: the
+  axis is batching, not one-agent-per-task. The `/simplify-plan` user command
+  was created to do this critique on future plans.
 
 **Architecture resolved:** four-part split — detect (script) → summarize
 (agent) → approve (human) → commit (gitlore script). New

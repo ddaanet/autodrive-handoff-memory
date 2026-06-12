@@ -33,3 +33,18 @@ needs special care.
   curt (one line).
 - If you find yourself writing "if you ... then ..." in an agent
   channel, rewrite as "do not ..." instead.
+
+**Scope — this rule governs DENY channels, not DIRECTIVE channels.**
+A `PreToolUse` deny is meant to *stop* the agent, so any actionable
+phrase is harmful (the agent runs it). But `additionalContext` used as
+a *directive* — where the whole point is that the agent should act
+(present a line to the user, summarize+commit per a probe's output) —
+is the opposite case: imperative wording is correct and required
+there. See [[feedback-hook-agent-feedback]] (additionalContext exists
+precisely to carry agent-actionable content). Do not over-apply the
+no-actionable-phrases rule to directive output. Tell: is this channel
+trying to halt the agent (deny → descriptive only) or drive it
+(directive → imperative is fine)? A reviewer flagged handoff's
+non-tmux `/rename` `additionalContext` as a violation; it was not —
+that channel directs the agent to relay the line, and the probe's own
+summarize→approve→commit directive is equally imperative by design.
