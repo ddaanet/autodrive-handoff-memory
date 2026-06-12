@@ -1,40 +1,53 @@
 ---
 name: project-handoff-gitlore-aware
-description: "handoff will proactively commit memory during its flow once gitlore ships a standalone commit entry point; memory-only, push=live not origin"
+description: "handoff proactively commits gitlore memory at wrap-up; gitlore prerequisite SHIPPED, spec+plan written, ready to implement"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 2374725e-5904-4dcf-b8f6-67e3f33aa929
 ---
 
-Decision (2026-06-12): handoff becomes **gitlore-aware**. When the memory
-submodule is active and dirty, handoff proactively summarizes the memory
-changes, gets explicit user approval, writes the approved summary to the
-`gitlore-commit-msg` file, and invokes a **new gitlore standalone entry point**
-to commit memory + advance local `live`.
+Decision (2026-06-12): handoff becomes **gitlore-aware**. At wrap-up, when the
+memory submodule is dirty, a read-only probe emits a directive and the agent
+summarizes the changes → gets explicit user approval (prose, editable) →
+commits via gitlore's blessed entry point.
 
 **Why:** `/commit-commands:commit` forbids user interaction; gitlore mandates
 per-commit approval (FR11). Coupling review+commit at the interactive handoff
-moment avoids drift / redundant reviews and keeps later non-interactive code
-commits clean of the gate.
+moment avoids drift / redundant reviews.
 
-**Scope:** commit ONLY memory (not `handoff-task.md` or code). "push" = local
-`live` branch (`HEAD:live`) only, NOT origin — origin push stays with gitlore's
-ambient `pre-push` hook.
+**Scope:** commit ONLY memory. "push" = local `live` (`HEAD:live`) only, NOT
+origin — origin push stays with gitlore's ambient `pre-push` hook.
 
-**Prerequisite (parked):** gitlore must first add the standalone entry point.
-Brief: `/Users/david/code/gitlore/brief-standalone-memory-commit.md`. handoff's
-own integration is deferred until that lands.
+**Status (2026-06-12):**
+- gitlore prerequisite **SHIPPED**: `commit-memory.sh` (D16), arg-driven
+  (`-m`/`-F -`), commits the submodule + advances local `live` with no parent
+  commit. Discover via `git config gitlore.commitCommand` (self-healing,
+  re-pinned every SessionStart). Activation gate = `gitlore-memory` submodule
+  in `.gitmodules` (FR12). Runs without `CLAUDE_PLUGIN_ROOT` (falls back to
+  `gitlore.hooksDir`).
+- handoff spec + plan **written**:
+  `docs/superpowers/specs/2026-06-12-gitlore-aware-handoff-design.md`,
+  `docs/superpowers/plans/2026-06-12-gitlore-aware-handoff.md`. 7 TDD tasks.
+  Next session: execute the plan (subagent-driven or inline).
 
-**Handoff-side open decisions** (settle when resuming):
-- Keep the three-parallel pattern at write time (two Write-**tool** calls +
-  one detection Bash call). Do NOT heredoc the file writes into one script —
-  that bypasses `write-stage.sh` (stages `handoff-task.md` + saves the session
-  pointer) and `write-rename.sh`. See [[feedback-harness-over-agent]].
-- Non-tmux autorename: route the `/rename <title>` line through
-  `additionalContext` (agent-facing) with an instruction to print it fenced,
-  replacing the dead "relay the systemMessage" line in SKILL.md — agents never
-  see `systemMessage`. See [[feedback-hook-agent-feedback]].
+**Architecture resolved:** four-part split — detect (script) → summarize
+(agent) → approve (human) → commit (gitlore script). New
+`scripts/memory-probe.sh` owns the whole dirty-or-not conditional and prints
+the agent's next action; the skill body just runs it and follows output (no
+`if dirty` in agent — see [[feedback-harness-over-agent]]). Exposed to the
+agent's Bash via `bin/handoff-memory-probe` (NOT a hook) — see
+[[reference-skill-bundled-scripts]] for why. The probe couples only to the
+`gitlore-memory` submodule registration and the `commitCommand` key.
 
-**Detection:** gitlore active = `gitlore_has_submodule` / `git config
-gitlore.hooksDir` non-empty.
+**Decisions settled this session:**
+- Probe is a PATH-shimmed script, not a hook: the agent must *act* on the
+  result, and the conditional lives in the script regardless.
+- Three-parallel batch confirmed: two Write-**tool** calls + one probe Bash
+  call; no heredoc (would bypass `write-stage.sh` / `write-rename.sh`).
+- Non-tmux autorename: route the `/rename` line through `additionalContext`
+  (agent-facing), drop the dead "relay the systemMessage" line. See
+  [[feedback-hook-agent-feedback]].
+- gitlore's `commit-memory.sh` STAYS in gitlore `scripts/` (discovered via the
+  key), NOT moved to `bin/`: the key is self-healing + no layout coupling;
+  moving it reopens a shipped feature and widens its surface.
