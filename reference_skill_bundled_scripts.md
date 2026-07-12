@@ -18,6 +18,12 @@ passes that claimed it isn't possible:
   `bin` key in `plugin.json` needed (the cache plugin bins are all on PATH).
   This holds from the cache path, so it works for end-users, not just a dev
   checkout.
+- **Cross-plugin bare-name invocation works** (verified 2026-07-12): PATH gets
+  one `bin/` entry per *enabled* plugin — all plugins, not just the invoking
+  one, and entries are added even when the `bin/` dir doesn't exist. Disabled
+  plugins' bins are absent. So plugin A's skill can call plugin B's `bin/`
+  executable by bare name iff B is enabled; `command -v` is the availability
+  probe (costs a tool call — see the handoff single-turn FR before using it).
 - A `bin/` executable **resolves by bare name** from a fresh agent Bash call
   (tested: a throwaway `bin/handoff-probe-test` ran by name → printed output).
 - The Skill tool also announces `Base directory for this skill: <abs-path>` at
