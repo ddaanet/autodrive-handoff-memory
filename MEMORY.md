@@ -40,3 +40,5 @@
 - [Prose over modals in design](feedback_prose_over_modals_design.md) — AskUserQuestion modals fine ~75% of the time, but never foreclose prose for clarification, correcting assumptions, or adjusting; ask in prose when proposing architecture
 - [Session JSONL schema reference](reference_session_jsonl_schema.md) — no official schema (docs say internal/unstable); claude-dev.tools doc + simonw/claude-code-transcripts are the maintained references; structural flags over content heuristics
 - [Compact prose in design discussions](feedback_compact_prose.md) — cut connective wordage (transitions, framing, re-summaries), keep the substance; compactness ≠ dropping content
+- [Supersede without museum narrative](feedback_design_supersede_no_museum.md) — when reversing a design decision, keep the load-bearing incident/rationale but cut deletion inventories, "no longer does X" framing, and change-bookkeeping; git diff already records what was cut
+- [Remove features cleanly](feedback_remove_cleanly_no_vestigial.md) — cut all machinery in one pass; no absence-tests, no vestigial fixtures/scaffolding, inline a collapsed script; if a design proved harmful the cleanup is total
