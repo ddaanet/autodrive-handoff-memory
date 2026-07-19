@@ -28,12 +28,20 @@ OWN first line (e.g. `# Update Config Skill`), not always
 bodies. A native body can be 100+ KB. `isMeta:true` is the robust
 structural flag for ALL harness-injected non-conversation content (skill
 bodies, `<local-command-caveat>`, `## Context`/`## Context Usage`
-injections); genuine user prompts never carry it. `extract.py` drops
-`isMeta` in `load_entries` (alongside `isSidechain`) to keep skill
-content out of the handoff — verified across 20+ real transcripts
-2026-05-23.
+injections); genuine user prompts never carry it. (Historically the
+removed `extract.py` dropped `isMeta`+`isSidechain` to keep skill content
+out of the handoff — verified across 20+ real transcripts 2026-05-23.)
 
-Verified against real transcripts 2026-05-23. Relevant whenever scraping
-the transcript to detect skill activation or command invocation (e.g.
-`extract.py`, the handoff `handoff_activated()` detector). Sibling of
+The handoff frame no longer scrapes the transcript for content, so `isMeta`
+filtering is no longer used anywhere in the plugin. The one live scraper is
+`handoff_activated()` in `scripts/_lib.sh`, an activation *detector* (not a
+content extractor): it skips `isSidechain` entries and returns true on
+either the agent path (a `Skill` tool_use with `input.skill` in
+`handoff`/`handoff:handoff`) or the user path (a `type:"user"` entry whose
+string content contains `<command-name>/handoff:handoff</command-name>`). It
+does not inspect `isMeta`.
+
+Verified against real transcripts 2026-05-23; `handoff_activated()` state
+re-confirmed against live `_lib.sh` 2026-07-17. Relevant whenever detecting
+skill activation or command invocation from a transcript. Sibling of
 [[project_jsonl_sidechain_segregation]].
