@@ -1,10 +1,11 @@
 ---
 name: project-precompact-drive
-description: "precompact redesign — commit memory → compact → continue, driven by a tmux watcher; approved spec at docs/2026-07-18-precompact-drive-design.md; migrates handoff's memory commit to gitlore's file-trigger"
+description: "precompact redesign to commit-memory→compact→continue, gated on Stop + SessionStart(compact) hooks (not a mid-turn watcher); approved spec at docs/2026-07-18-precompact-drive-design.md; migrates handoff's memory commit to gitlore's file-trigger"
 metadata:
   node_type: memory
   type: project
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
+  modified: 2026-07-20T10:27:43.488Z
 ---
 
 precompact is being redefined from passive "flush memory, you `/compact`" to
@@ -20,9 +21,15 @@ gitlore's **file-trigger** (`.claude/gitlore-memory-message` +
 `.claude/gitlore-commit-memory`, consumed by `memory-commit-batch.sh` on
 PostToolBatch), NOT `commit-memory.sh -F -`. Compaction driven by a magic file
 `.claude/autocompact` (exactly two lines: `/compact [directive]` /
-single-line continuation) → new `write-compact.sh` PostToolUse hook → detached
-`compact-when-idle.sh` watcher (mirrors autorename / `rename-when-idle.sh`,
-reuses `_rename-lib.sh`), with line 2 gated on the `⎿ Compacted (` marker.
+single-line continuation), consumed by THREE hooks (revised 2026-07-19 after a
+TUI spike): `write-compact.sh` PostToolUse **validates only** (systemMessage +
+additionalContext on malformed, no spawn, no delete); `stop-compact.sh` on
+**Stop** renames the file to `.pending` and spawns the line-1 watcher;
+`load-compact.sh` on **SessionStart(compact)** spawns the line-2 watcher.
+Watchers reuse `_rename-lib.sh`, do type-verify-submit for line 1, and read
+only the visible pane. NOT a PostToolUse-spawned watcher polling for idle —
+prose typed mid-turn is injected into the running turn, so screen-scraped
+idleness is not a safe gate ([[reference_cc_tui_tmux_driving]]).
 Human-in-the-loop: the ONLY interactive pause is the memory-commit approval,
 and only when memory is dirty; the compact directive + continuation are
 informed-not-gated (invoking precompact authorizes the compaction).

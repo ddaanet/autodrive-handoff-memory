@@ -1,10 +1,11 @@
 ---
 name: project-worktree-handoff-root
-description: "Done (2026-06-09, commits d244e34..5d0145a) — handoff hooks now anchor on the enclosing git-worktree root via worktree_root.py so worktree sessions own their own .claude/; release not yet run"
+description: "Done (2026-06-09, commits d244e34..5d0145a) — handoff hooks now anchor on the enclosing git-worktree root via worktree_root.py so worktree sessions own their own .claude/; released in v0.9.0"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 7a891994-6ca1-4ea3-a503-1259d89a76e2
+  modified: 2026-07-20T13:18:59.048Z
 ---
 
 **Bug:** in a git-worktree session the handoff hooks anchor on
@@ -27,7 +28,7 @@ green. Direct port of cwd-safety's `_worktree_root`. Rejected: raw `.cwd` as roo
 Executed **inline with TDD, not subagents** (see [[feedback-subagents-over-applied]])
 — the plan's 6 commit boundaries were kept. Resolutions: empty-cwd guard **kept**
 (`if not cwd: return project`); spec+plan **folded into** the Task 6 docs commit.
-Full suite green (46 bats + 86 pytest). `just release` (version bump, tag,
-marketplace) is the remaining user-driven step — not yet run.
+Full suite green (46 bats + 86 pytest). Released in **v0.9.0** (verified
+2026-07-20: `git merge-base --is-ancestor 5d0145a v0.9.0` succeeds).
 
 See [[feedback-claude-project-dir]], [[feedback-handoff-tree-local]].
