@@ -46,4 +46,5 @@
 - [precompact drive](project_precompact_drive.md) — SHIPPED 2026-07-20 (7f3c70c..a3b9cef, unreleased); precompact drives commit-memory→compact→continue via Stop + SessionStart(compact); never yet exercised against a live session
 - [Plugin reload at session start](reference_plugin_reload_session_start.md) — skill bodies and hooks are snapshotted at session start; a mid-session plugin edit is NOT live until `/reload-plugins`
 - [bats vacuous negative tests](reference_bats_vacuous_negative.md) — `run missing_function` exits 127, so `[ $status -ne 0 ]` passes before the code exists; every predicate needs a positive assertion to have a real RED phase
+- [Observability isn't gated on the happy path](feedback_observability_not_gated_on_happy_path.md) — never skip a failure-reporting mechanism because the run you watched went fine; enumerate failure paths and ask who learns about each
 - [Memory status claims rot](feedback_memory_status_claims_rot.md) — "not yet run"/"pending" claims go stale silently; verify in git/disk before repeating one, and fix the file in the same turn
