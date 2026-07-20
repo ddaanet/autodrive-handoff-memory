@@ -1,17 +1,26 @@
 ---
 name: project-precompact-drive
-description: "precompact redesign to commit-memory→compact→continue, gated on Stop + SessionStart(compact) hooks (not a mid-turn watcher); approved spec at docs/2026-07-18-precompact-drive-design.md; migrates handoff's memory commit to gitlore's file-trigger"
+description: "SHIPPED 2026-07-20 (7f3c70c..a3b9cef, unreleased); precompact drives commit-memory→compact→continue via Stop + SessionStart(compact); never yet exercised against a live session"
 metadata:
   node_type: memory
   type: project
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-20T10:27:43.488Z
+  modified: 2026-07-20T17:40:34.671Z
 ---
 
-precompact is being redefined from passive "flush memory, you `/compact`" to
-active **commit memory → compact → continue**. Full approved design:
-`docs/2026-07-18-precompact-drive-design.md` (brainstormed + verified
-2026-07-18; NOT yet implemented).
+precompact redefined from passive "flush memory, you `/compact`" to active
+**commit memory → compact → continue**. Full design:
+`docs/2026-07-18-precompact-drive-design.md`.
+
+**Status (2026-07-20):** SHIPPED on `main` in 4 commits `7f3c70c..a3b9cef`
+(docs / probes / hooks+watchers / skill+docs), inline TDD, 93 bats + 9 pytest
+green. NOT yet released — `v0.9.0` is still the last tag, and the release now
+covers this plus two earlier unreleased commits. **Never exercised against a
+live session**: all coverage is synthetic payloads + a tmux stub, so the first
+real `/handoff:precompact` in a fresh session is the actual integration test.
+Watch specifically that `Stop` arms, that `SessionStart(compact)` fires the
+continuation, and that type-verify-submit does not abort on a recognized
+`/compact`.
 
 Shape: skill body stays vocabulary-free (run `handoff-precompact-probe`,
 follow its directives — no gitlore/SDD vocab). ONE probe composes the gitlore
@@ -38,10 +47,15 @@ informed-not-gated (invoking precompact authorizes the compaction).
 durable memory to the summariser at full fidelity; the file-trigger sidesteps
 the sandbox + auto-mode-classifier fragility of an agent-run git commit.
 
-**How to apply:** implement per the spec with inline TDD (per
-[[project_worktree_handoff_root]] convention, not subagents). Migrating
-`memory-probe.sh` to the file-trigger also closes a standing gap — gitlore
-built the file-trigger FOR handoff (handoff-only, settled 2026-07-17) but
-handoff still emits `-F -`. The TUI-driving facts the watcher depends on:
-[[reference_cc_tui_tmux_driving]]. Update DESIGN.md in the same pass
-([[feedback_update_design_doc]]).
+**How to apply:** implemented per the spec with inline TDD (per
+[[project_worktree_handoff_root]] convention, not subagents). Two deviations
+from the spec, both deliberate: the IPC directory resolves from the already-known
+git root rather than `rev-parse --show-superproject-working-tree` (same answer
+by construction, no extra subprocess, no empty-result edge case); and a
+malformed `autocompact` surviving to `Stop` is consumed there rather than left
+in place, so the same complaint does not repeat at every later `Stop`.
+
+The TUI-driving facts the watchers depend on: [[reference_cc_tui_tmux_driving]].
+Plugin skill bodies and `hooks.json` are snapshotted at session start, so
+editing them mid-session does not activate them — see
+[[reference_plugin_reload_session_start]].
