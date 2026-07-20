@@ -1,26 +1,29 @@
 ---
 name: project-precompact-drive
-description: "SHIPPED 2026-07-20 (7f3c70c..a3b9cef, unreleased); precompact drives commit-memory→compact→continue via Stop + SessionStart(compact); never yet exercised against a live session"
+description: "SHIPPED + live-exercised 2026-07-20 (7f3c70c..1b6214a, unreleased); precompact drives commit-memory→compact→continue via Stop + SessionStart(compact); task file shared with handoff carries the content, prompt is only a handle"
 metadata:
   node_type: memory
   type: project
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-20T17:40:34.671Z
+  modified: 2026-07-20T19:06:05.046Z
 ---
 
 precompact redefined from passive "flush memory, you `/compact`" to active
 **commit memory → compact → continue**. Full design:
 `docs/2026-07-18-precompact-drive-design.md`.
 
-**Status (2026-07-20):** SHIPPED on `main` in 4 commits `7f3c70c..a3b9cef`
-(docs / probes / hooks+watchers / skill+docs), inline TDD, 93 bats + 9 pytest
-green. NOT yet released — `v0.9.0` is still the last tag, and the release now
-covers this plus two earlier unreleased commits. **Never exercised against a
-live session**: all coverage is synthetic payloads + a tmux stub, so the first
-real `/handoff:precompact` in a fresh session is the actual integration test.
-Watch specifically that `Stop` arms, that `SessionStart(compact)` fires the
-continuation, and that type-verify-submit does not abort on a recognized
-`/compact`.
+**Status (2026-07-20):** SHIPPED on `main`, `7f3c70c..1b6214a`, 101 bats + 9
+pytest green. NOT yet released — `v0.9.0` is still the last tag; the release
+covers this plus two earlier unreleased commits, and `just release minor` is
+blocked by the auto-mode classifier so the user must run it.
+
+**First live run** exercised the whole chain: `Stop` armed, the watcher typed
+and submitted `/compact`, `SessionStart(compact)` fired the continuation. Two
+defects it exposed, both now fixed (`4300dea`) — the line-2 Enter was absorbed
+as a newline for want of a settle delay, and `is_typing` verification reported
+that non-submit as success. Details in [[reference_cc_tui_tmux_driving]]. The
+watcher fix and the shared-task-file change are themselves **not yet live-
+tested**.
 
 Shape: skill body stays vocabulary-free (run `handoff-precompact-probe`,
 follow its directives — no gitlore/SDD vocab). ONE probe composes the gitlore
@@ -39,6 +42,16 @@ Watchers reuse `_rename-lib.sh`, do type-verify-submit for line 1, and read
 only the visible pane. NOT a PostToolUse-spawned watcher polling for idle —
 prose typed mid-turn is injected into the running turn, so screen-scraped
 idleness is not a safe gate ([[reference_cc_tui_tmux_driving]]).
+**The seam (2026-07-20):** both skills write `.claude/handoff-task.md`, and
+`load-compact.sh` injects it at `SessionStart(compact)` via a shared
+`handoff_frame` helper. The task file carries anything that must survive
+verbatim; the continuation prompt is only a handle to it. This replaced an
+earlier ban on precompact writing the task file — with no durable channel,
+verbatim-critical facts got crammed into the one-line prompt. Consequences:
+`handoff_activated()` accepts either skill (the guards gate on it), the frame
+header is `# Task` not `# Handoff`, and precompact now leaves durable
+cross-session state that is re-injected again at the next `startup|clear`.
+
 Human-in-the-loop: the ONLY interactive pause is the memory-commit approval,
 and only when memory is dirty; the compact directive + continuation are
 informed-not-gated (invoking precompact authorizes the compaction).

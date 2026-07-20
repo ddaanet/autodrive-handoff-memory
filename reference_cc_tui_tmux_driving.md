@@ -1,11 +1,11 @@
 ---
 name: reference-cc-tui-tmux-driving
-description: "mid-turn input has FOUR classes (TUI-local intercepted / harness-action queued / plugin-command own-turn / **prose injected into the running turn**); Stop + SessionStart(compact) are the authoritative gates; Stop doesn't fire on Esc (verified v2.1.215)"
+description: "mid-turn input has FOUR classes (TUI-local intercepted / harness-action queued / plugin-command own-turn / **prose injected into the running turn**); Stop + SessionStart(compact) are the authoritative gates; Stop doesn't fire on Esc; Enter right after a long send-keys -l is absorbed as a newline — settle first and verify submits with is_busy (verified v2.1.215)"
 metadata:
   node_type: memory
   type: reference
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-20T10:27:27.356Z
+  modified: 2026-07-20T19:05:43.571Z
 ---
 
 Verified 2026-07-19 against Claude Code v2.1.215 (Opus 4.8, tmux 3.5a) by
@@ -41,6 +41,17 @@ coarse — it holds only for slash commands, not prose.
   `is_busy` transfers unchanged, BUT read only the **visible** pane —
   `capture-pane -S` history matches a stale timer and reports busy long after
   `Stop`.
+- **An Enter sent immediately after a long `send-keys -l` is absorbed as a line
+  break, not a submit** — it lands inside the TUI's paste window. Observed
+  2026-07-20: `/compact` (line 1) submitted because its command-recognition
+  readback happened to sit between the text and the Enter; the continuation
+  prose (line 2, ~190 chars, no readback) did not, and needed a manual Enter.
+  **Always put a settle delay between the literal send and the first Enter.**
+- **Verify a submit with `is_busy`, never "the composer looks empty".**
+  `is_typing` inspects only the last `❯` line, so an absorbed Enter leaves a
+  multi-line composer that reads as empty — the watcher then reports a
+  successful submit that never happened. "The session went busy" is the only
+  positive evidence.
 - **Readiness ≠ the `❯` glyph** (still true): the glyph shows while the backend
   is `/rc connecting…`.
 - **tmux socket is unreachable from the agent's sandboxed Bash**
