@@ -1,11 +1,11 @@
 ---
 name: reference-plugin-reload-session-start
-description: Plugin skill bodies (and almost certainly hooks.json) are snapshotted at session start — editing a plugin mid-session does not activate the change; observed 2026-07-20 in Claude Code
+description: "skill bodies and hooks are snapshotted at session start; a mid-session plugin edit is NOT live until `/reload-plugins`"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 94e0a066-a634-4a25-a32d-b0f53b992c25
-  modified: 2026-07-20T17:40:52.507Z
+  modified: 2026-07-20T17:58:23.368Z
 ---
 
 Editing a plugin's own files mid-session does **not** make the change live in
@@ -27,9 +27,15 @@ new magic file can be written with no hook registered to consume it. That is a
 silent no-op, not an error — nothing fires, nothing complains, and the failure
 looks like the feature simply not working.
 
-**How to apply:** when self-testing plugin changes mid-session, either restart
-the session first or fall back to the previously-shipped path and say so. Never
-report a mid-session plugin edit as "now active". Bundled *scripts* invoked by
-bare-name `bin/` shim are the exception — PATH is set at session start but
-points at the live directory, so script edits take effect immediately
-([[reference_skill_bundled_scripts]]).
+**The fix is `/reload-plugins`** — no session restart needed. Run 2026-07-20 it
+reported `18 plugins · 8 skills · 11 agents · 34 hooks`, and the next
+invocation of the edited skill loaded the **new** body (the skill listing's
+`description:` updated too). So the snapshot is refreshable on demand.
+
+**How to apply:** when self-testing plugin changes mid-session, run
+`/reload-plugins` first — the user can invoke it with `! /reload-plugins`, or
+ask them to. Until then, fall back to the previously-shipped path and say so;
+never report a mid-session plugin edit as "now active" without a reload.
+Bundled *scripts* invoked by a bare-name `bin/` shim are the exception — PATH
+is set at session start but points at the live directory, so script edits take
+effect immediately ([[reference_skill_bundled_scripts]]).
