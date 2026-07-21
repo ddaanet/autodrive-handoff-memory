@@ -1,11 +1,11 @@
 ---
 name: project-precompact-drive
-description: "SHIPPED + green end-to-end live run 2026-07-20 (7f3c70c..1b6214a); precompact drives commit-memory→compact→continue via Stop + SessionStart(compact); task file shared with handoff carries the content, prompt is only a handle"
+description: "SHIPPED 2026-07-20, three live runs green (unreleased); commit-memory→compact→continue via Stop + SessionStart(compact); known gap: submit_or_fail false-fails on queued submissions; \"/compact posted twice\" is CC's own double-record, not the plugin"
 metadata:
   node_type: memory
   type: project
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-20T19:43:08.836Z
+  modified: 2026-07-20T21:11:12.782Z
 ---
 
 precompact redefined from passive "flush memory, you `/compact`" to active
@@ -28,6 +28,21 @@ the user: line 1 typed and submitted, `autocompact` → `.pending` → consumed,
 the task-file frame injected at `SessionStart(compact)` (header `# Task —
 <stamp>`), the write guard passing precompact's own task-file write, and line
 2 auto-submitted.
+
+**Third live run (2026-07-20 20:52, session 8e39f620)** delivered both lines
+but exposed two report-level findings. (1) `submit_or_fail`'s `is_busy`
+confirmation is a **false negative for queued submissions**: the continuation
+Enter landed while the session was between compaction-complete and readiness,
+so the prompt was *enqueued* (JSONL `queue-operation` enqueue → dequeue →
+`promptSource:"queued"`), the pane never showed a spinner in the 3×0.5s
+confirm window, and the watcher wrote "three Enters did not submit it" even
+though the line was delivered. Fail wording overclaims; confirmation needs a
+queued-aware signal (e.g. harness-side: grep the transcript tail for the
+line, path available to the spawning hook as `transcript_path`). (2) The
+"/compact posted twice" report is **not a plugin defect**: every `/compact` —
+manual ones included, verified in sessions predating precompact — logs a RAW
+prompt entry plus a `<command-name>` record ~30ms apart, and both render;
+one submission, double-recorded by Claude Code itself.
 
 **Watcher failures are now reported**, added on the back of that run rather
 than skipped as speculative: a clean run is no evidence of observability, and

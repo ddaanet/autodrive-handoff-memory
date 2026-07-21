@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 6afc4947-de16-4c6c-9503-de03977fa611
+  modified: 2026-07-21T06:57:46.777Z
 ---
 
 In Claude Code session JSONL, a slash command like `/handoff:handoff`
@@ -17,6 +18,16 @@ literal text `/handoff:handoff`, and the slash path does NOT emit a
 
 By contrast, agent-invoked skills appear as an assistant `tool_use`
 block: `{"type":"tool_use","name":"Skill","input":{"skill":"handoff:handoff"}}`.
+
+**Exception — built-in local commands double-record.** `/compact` (verified
+in 5 invocations across 4 sessions, 2026-07-17..20, manual and
+watcher-typed alike) logs BOTH a plain `type:"user"` entry whose content is
+the literal command line AND the `<command-name>` wrapper record,
+~15–60ms apart under different promptIds — one submission, two records,
+both rendered (reads as "posted twice"). Queued input gets its own entries:
+`type:"queue-operation"` (`enqueue`/`dequeue`, with content) and
+`promptSource:"queued"` on the eventual prompt — the authoritative signal
+that a submission landed while the session was busy/finalizing.
 
 **Skill bodies are injected as `isMeta:true` user entries** — on BOTH
 paths: the `Skill` tool (the body entry also carries `sourceToolUseID`)
