@@ -1,21 +1,21 @@
 ---
 name: project-precompact-drive
-description: "SHIPPED 2026-07-20, three live runs green (unreleased); commit-memory→compact→continue via Stop + SessionStart(compact); known gap: submit_or_fail false-fails on queued submissions; \"/compact posted twice\" is CC's own double-record, not the plugin"
+description: "RELEASED in v0.10.0 (2026-07-21), three live runs green; commit-memory→compact→continue via Stop + SessionStart(compact); known gap: submit_or_fail false-fails on queued submissions; \"/compact posted twice\" is CC's own double-record, not the plugin"
 metadata:
   node_type: memory
   type: project
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-20T21:11:12.782Z
+  modified: 2026-07-21T07:07:11.867Z
 ---
 
 precompact redefined from passive "flush memory, you `/compact`" to active
 **commit memory → compact → continue**. Full design:
 `docs/2026-07-18-precompact-drive-design.md`.
 
-**Status (2026-07-20):** SHIPPED on `main`, `7f3c70c..1b6214a`, 101 bats + 9
-pytest green. NOT yet released — `v0.9.0` is still the last tag; the release
-covers this plus two earlier unreleased commits, and `just release minor` is
-blocked by the auto-mode classifier so the user must run it.
+**Status (2026-07-21):** RELEASED in `v0.10.0` (tag + GH release + marketplace
+bump), alongside the whole-plugin simplify consolidation. `just release minor`
+is blocked by the auto-mode classifier; the user ran it via `! just release
+minor`.
 
 **First live run** exercised the whole chain: `Stop` armed, the watcher typed
 and submitted `/compact`, `SessionStart(compact)` fired the continuation. Two
