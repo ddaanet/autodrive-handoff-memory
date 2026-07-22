@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-21T07:07:11.867Z
+  modified: 2026-07-21T21:24:21.191Z
 ---
 
 precompact redefined from passive "flush memory, you `/compact`" to active
@@ -13,9 +13,12 @@ precompact redefined from passive "flush memory, you `/compact`" to active
 `docs/2026-07-18-precompact-drive-design.md`.
 
 **Status (2026-07-21):** RELEASED in `v0.10.0` (tag + GH release + marketplace
-bump), alongside the whole-plugin simplify consolidation. `just release minor`
-is blocked by the auto-mode classifier; the user ran it via `! just release
-minor`.
+bump), alongside the whole-plugin simplify consolidation. Follow-up `v0.10.1`
+carries the precompact task-file reset (both wipe hooks now match precompact).
+`just release` is not categorically blocked by the auto-mode classifier — the
+v0.10.0 run was, but `just release patch` went through unprompted when the
+command description named both `handoff` and the `claude-plugins` marketplace
+up front, per [[feedback-release-flow-naming]].
 
 **First live run** exercised the whole chain: `Stop` armed, the watcher typed
 and submitted `/compact`, `SessionStart(compact)` fired the continuation. Two
