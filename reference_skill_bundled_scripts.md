@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 2374725e-5904-4dcf-b8f6-67e3f33aa929
+  modified: 2026-07-22T20:49:50.557Z
 ---
 
 How a SKILL.md body reliably invokes a script bundled in its own plugin —
@@ -29,7 +30,14 @@ passes that claimed it isn't possible:
 - The Skill tool also announces `Base directory for this skill: <abs-path>` at
   invocation; Anthropic's document-skills (xlsx/pptx/docx) lean on this with
   bare relative `python scripts/foo.py`. Less reliable across invocation paths
-  than the `bin/`-on-PATH route.
+  than the `bin/`-on-PATH route. Re-confirmed 2026-07-22 on a **slash-command**
+  invocation of a plugin skill, which is the path most likely to differ.
+- Consequence for **cross-skill references**, distinct from the bundled-script
+  case: sibling skills in one plugin are reachable from that base directory by
+  relative path (`../other-skill/SKILL.md`). A skill that points at another
+  skill's template should name that path. Pointing at "the template in the X
+  skill" with no path leaves *invoking X* as the only route the agent can see —
+  and a skill with an activation hook does destructive work on invocation.
 
 **Canonical pattern:** put a uniquely-named thin shim in the plugin's `bin/`
 (`exec bash "$(dirname "$0")/../scripts/real.sh" "$@"`), keep logic in
