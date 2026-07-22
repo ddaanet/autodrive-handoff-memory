@@ -1,11 +1,11 @@
 ---
 name: project-precompact-drive
-description: "RELEASED in v0.10.0 (2026-07-21), three live runs green; commit-memory→compact→continue via Stop + SessionStart(compact); known gap: submit_or_fail false-fails on queued submissions; \"/compact posted twice\" is CC's own double-record, not the plugin"
+description: "RELEASED in v0.10.0 (2026-07-21), three live runs green; commit-memory→compact→continue via Stop + SessionStart(compact); the queued-submit false-fail is FIXED (line-2 confirms via transcript, not is_busy); \"/compact posted twice\" is CC's own double-record, not the plugin"
 metadata:
   node_type: memory
   type: project
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-21T21:24:21.191Z
+  modified: 2026-07-22T05:58:16.163Z
 ---
 
 precompact redefined from passive "flush memory, you `/compact`" to active
@@ -39,9 +39,18 @@ Enter landed while the session was between compaction-complete and readiness,
 so the prompt was *enqueued* (JSONL `queue-operation` enqueue → dequeue →
 `promptSource:"queued"`), the pane never showed a spinner in the 3×0.5s
 confirm window, and the watcher wrote "three Enters did not submit it" even
-though the line was delivered. Fail wording overclaims; confirmation needs a
-queued-aware signal (e.g. harness-side: grep the transcript tail for the
-line, path available to the spawning hook as `transcript_path`). (2) The
+though the line was delivered. **Fixed 2026-07-22:** line-2 confirmation moved
+off `is_busy` to the transcript. `submit_confirmed_or_fail` +
+`transcript_prompt_count` (`_rename-lib.sh`) baseline the count of genuine
+user-prompt entries containing the typed line, Enter, and poll for it to rise;
+`load-compact.sh` exports the session `transcript_path` as `$HANDOFF_TRANSCRIPT`.
+The count keys on the same structural flags as `handoff_activated` (excludes the
+isMeta frame / isCompactSummary echoes) and is baselined pre-Enter, so neither a
+quoted copy in the summary nor a stale pre-compaction entry reads as a submit.
+Line 1 keeps `is_busy` — its `/compact` at Stop starts a reliably-busy
+compaction, never queued. Root cause verified against the 8e39f620 transcript
+(queued entry logged at 20:54:06, turn spinner at 20:54:19 — 13s later, past the
+window). (2) The
 "/compact posted twice" report is **not a plugin defect**: every `/compact` —
 manual ones included, verified in sessions predating precompact — logs a RAW
 prompt entry plus a `<command-name>` record ~30ms apart, and both render;
