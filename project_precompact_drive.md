@@ -1,11 +1,11 @@
 ---
 name: project-precompact-drive
-description: "commit-memory→compact→continue via Stop + SessionStart(compact); three live runs green; line-2 confirms via transcript, not is_busy (a post-compaction submit is queued and shows no spinner); \"/compact posted twice\" is CC's own double-record, not the plugin"
+description: "commit-memory→compact→continue via Stop + SessionStart(compact); neither driven line confirms on is_busy any more — line 2 keys on the transcript, line 1 on SessionStart(compact) consuming .pending; \"/compact posted twice\" is CC's own double-record, not the plugin"
 metadata:
   node_type: memory
   type: project
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-22T17:07:47.017Z
+  modified: 2026-07-22T19:02:02.694Z
 ---
 
 precompact redefined from passive "flush memory, you `/compact`" to active
@@ -44,8 +44,9 @@ user-prompt entries containing the typed line, Enter, and poll for it to rise;
 The count keys on the same structural flags as `handoff_activated` (excludes the
 isMeta frame / isCompactSummary echoes) and is baselined pre-Enter, so neither a
 quoted copy in the summary nor a stale pre-compaction entry reads as a submit.
-Line 1 keeps `is_busy` — its `/compact` at Stop starts a reliably-busy
-compaction, never queued. Root cause verified against the 8e39f620 transcript
+Line 1 kept `is_busy` on the reasoning that its `/compact` at Stop starts a
+reliably-busy compaction, never queued — **falsified 2026-07-22**, see below.
+Root cause verified against the 8e39f620 transcript
 (queued entry logged at 20:54:06, turn spinner at 20:54:19 — 13s later, past the
 window). (2) The
 "/compact posted twice" report is **not a plugin defect**: every `/compact` —
@@ -55,14 +56,31 @@ one submission, double-recorded by Claude Code itself.
 
 **Watcher failures are now reported**, added on the back of that run rather
 than skipped as speculative: a clean run is no evidence of observability, and
-the failing run is the one nobody is watching. Watchers write a reason to
-`.claude/autocompact.failed` (path handed down as `HANDOFF_FAIL_FILE` by the
-spawning hook) and `report-compact-failure.sh` surfaces it at the next
+the failing run is the one nobody is watching. Each watcher writes a reason to
+a file named for the line it drove (`.claude/autocompact.failed`,
+`.claude/autorename.failed`; path handed down as `HANDOFF_FAIL_FILE` by the
+spawning hook) and `report-watcher-failure.sh` surfaces them at the next
 `UserPromptSubmit` — earlier than `Stop`, since a watcher runs *after* the Stop
 that spawned it. The dangerous path it covers is line 1's recognition abort:
 `C-u` wipes the composer, so no compaction happens and the pane looks
 untouched. Reports only what a watcher observed; a stale `.pending` is never
 inferred as failure (legitimate for the whole Stop → compaction window).
+
+**Fourth live run (2026-07-22) delivered both lines and still reported a
+failure**, which is what falsified line 1's `is_busy`: the `/compact` submitted
+at 20:06:46, compacted for 103s, and the watcher wrote "three Enters did not
+submit it" anyway. Whatever the TUI renders in the ~1.5s after that keystroke,
+`is_busy` does not match it. The transcript trick does not transfer either — the
+`/compact` entry carries the submit timestamp but is *persisted* only when the
+command finishes, landing in the JSONL physically after the compact summary
+written 103s later. So line 1 stops asking whether the keystroke landed and asks
+whether the compaction happened: `stop-compact.sh` hands the watcher the
+`.pending` path as `HANDOFF_PENDING_FILE` and `submit_consumed_or_fail` waits
+for `SessionStart(compact)` to consume it. Slower to report a real failure, and
+free of false ones. Same run also fixed a `.claude/autocompact` that outlives an
+abnormally-ended turn (Esc, crash, quit) and gets armed by a later, unrelated
+`Stop`: `UserPromptSubmit` cannot fire between the write and that turn's own
+`Stop`, so anything it can see never armed and is swept.
 
 Shape: skill body stays vocabulary-free (run `handoff-precompact-probe`,
 follow its directives — no gitlore/SDD vocab). ONE probe composes the gitlore
