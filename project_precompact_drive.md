@@ -1,25 +1,21 @@
 ---
 name: project-precompact-drive
-description: "RELEASED in v0.10.0 (2026-07-21), three live runs green; commit-memory→compact→continue via Stop + SessionStart(compact); the queued-submit false-fail is FIXED and shipped in v0.10.2 (line-2 confirms via transcript, not is_busy); \"/compact posted twice\" is CC's own double-record, not the plugin"
+description: "commit-memory→compact→continue via Stop + SessionStart(compact); three live runs green; line-2 confirms via transcript, not is_busy (a post-compaction submit is queued and shows no spinner); \"/compact posted twice\" is CC's own double-record, not the plugin"
 metadata:
   node_type: memory
   type: project
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-22T10:32:30.963Z
+  modified: 2026-07-22T17:07:47.017Z
 ---
 
 precompact redefined from passive "flush memory, you `/compact`" to active
 **commit memory → compact → continue**. Full design:
 `docs/2026-07-18-precompact-drive-design.md`.
 
-**Status (2026-07-22):** RELEASED in `v0.10.0` (tag + GH release + marketplace
-bump), alongside the whole-plugin simplify consolidation. Follow-up `v0.10.1`
-carries the precompact task-file reset (both wipe hooks now match precompact);
-`v0.10.2` carries the transcript-based line-2 confirmation below.
-`just release` is not categorically blocked by the auto-mode classifier — the
-v0.10.0 run was, but `just release patch` went through unprompted when the
-command description named both `handoff` and the `claude-plugins` marketplace
-up front, per [[feedback-release-flow-naming]].
+Shipped and live-exercised; released alongside the whole-plugin simplify
+consolidation. Version and release-status bookkeeping is deliberately not
+tracked here — it rots silently and `git log` answers it, per
+[[feedback_memory_status_claims_rot]].
 
 **First live run** exercised the whole chain: `Stop` armed, the watcher typed
 and submitted `/compact`, `SessionStart(compact)` fired the continuation. Two
@@ -40,7 +36,7 @@ Enter landed while the session was between compaction-complete and readiness,
 so the prompt was *enqueued* (JSONL `queue-operation` enqueue → dequeue →
 `promptSource:"queued"`), the pane never showed a spinner in the 3×0.5s
 confirm window, and the watcher wrote "three Enters did not submit it" even
-though the line was delivered. **Fixed 2026-07-22, shipped in `v0.10.2`:**
+though the line was delivered. **Fixed:**
 line-2 confirmation moved off `is_busy` to the transcript. `submit_confirmed_or_fail` +
 `transcript_prompt_count` (`_rename-lib.sh`) baseline the count of genuine
 user-prompt entries containing the typed line, Enter, and poll for it to rise;
