@@ -1,11 +1,11 @@
 ---
 name: project-handoff-todo-ledger
-description: "handoff gained .claude/handoff-todo.md — a remainder-only todo ledger (open items, never completion state), gitignored, written by both skills, wiped at activation, injected in the same frame as the task file, suppressed when a workflow ledger like SDD's exists"
+description: "`.claude/handoff-todo.md` holds the remainder of a task list (open items only), git-tracked like the task file, both skills write it, wiped at activation, injected in the same frame as the task file, suppressed by a workflow ledger like SDD's"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 4cfddafb-441d-4f27-b514-ed3622e8fc11
-  modified: 2026-07-22T17:07:28.885Z
+  modified: 2026-07-23T14:59:23.058Z
 ---
 
 Built 2026-07-22, from the complaint that `handoff-task.md` was being abused to
@@ -27,8 +27,8 @@ because that surplus is boundary-local.
 **Shape.** Open items only; a finished item is dropped, never ticked. Injected
 by `handoff_frame` after the task file under one `# Task —` header — either
 file alone assembles a frame. Both skills write it in their existing parallel
-batch. Gitignored (working state; the task file is force-added because it pairs
-with a memory commit as an in-history record). Wiped at activation, guarded by
+batch. Force-added by `write-stage.sh` on the same terms as the task file
+(2026-07-23 reversal — it shipped gitignored; see below). Wiped at activation, guarded by
 read-guard/write-guard on the same terms as the task file — which made
 `handoff_match_target` variadic over (basename, rel) pairs, since the jq parse
 is on the Write/Edit hot path. `probe_ledger_path` in `_probe-lib.sh` is the
@@ -52,4 +52,15 @@ rejects, on a per-turn hook. Also rejected: a probe deciding whether a list
 exists — the agent knows for free, and a probe branch costs the
 single-parallel-turn requirement a detection round-trip.
 
-Full rationale: DESIGN.md, "A place for the todo list (2026-07-22)".
+**Reversed 2026-07-23: it is versioned.** It shipped gitignored on two
+arguments that do not survive being stated against the flow. The pairing with a
+gitlore memory commit is about a *moment*, and one skill invocation writes both
+files and commits the memory — both halves share it or neither does. The churn
+was measured under gitlore's per-commit approval gate; in the main repo the todo
+file moves exactly when the task file moves, a cost already accepted. Positively:
+`## Current task` and `## Remaining` are two sections of one snapshot, and
+tracking one puts half a frame in history — the half that names work not yet
+done. It is a snapshot, not a mutating ledger: rewritten whole at a boundary.
+
+Full rationale: DESIGN.md, "A place for the todo list (2026-07-22)" and
+"Overflow deserves the same persistence (2026-07-23)".
