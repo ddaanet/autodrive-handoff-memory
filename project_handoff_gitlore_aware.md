@@ -1,6 +1,6 @@
 ---
 name: project-handoff-gitlore-aware
-description: "handoff proactively commits gitlore memory at wrap-up; SHIPPED + merged to main (commit 80a0574, 2026-06-12)"
+description: "proactively commit gitlore memory at wrap-up; SHIPPED + merged to main (80a0574); probe-as-PATH-shim not hook, commit-memory stays in gitlore scripts/; plan critically cut 7→3 tasks pre-execution (validated subagents-over-applied)"
 metadata: 
   node_type: memory
   type: project

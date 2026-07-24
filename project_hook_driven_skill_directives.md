@@ -1,6 +1,6 @@
 ---
 name: project-hook-driven-skill-directives
-description: "Design pattern for hook-driven turn-by-turn skill directives — PTU magic file for zero-turn injection, state machine in script for cross-session"
+description: "PTU magic-file = zero-turn step injection; same-session needs no machinery; cross-session uses handoff+skill+script; explicit signal for ambiguous completion"
 metadata: 
   node_type: memory
   type: project

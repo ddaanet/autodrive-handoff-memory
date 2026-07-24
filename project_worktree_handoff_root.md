@@ -1,6 +1,6 @@
 ---
 name: project-worktree-handoff-root
-description: "Done (2026-06-09, commits d244e34..5d0145a) — handoff hooks now anchor on the enclosing git-worktree root via worktree_root.py so worktree sessions own their own .claude/; released in v0.9.0"
+description: "SHIPPED (commits d244e34..5d0145a); hooks anchor on the enclosing worktree root via worktree_root.py; executed inline-TDD not subagents; release not yet run"
 metadata: 
   node_type: memory
   type: project
