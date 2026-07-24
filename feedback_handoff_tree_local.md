@@ -1,6 +1,6 @@
 ---
 name: handoff-tree-local
-description: Handoff files stay under the project worktree's `.claude/` — never relocated into the shared gitlore memory submodule; `write-stage.sh`'s `git add -f` versions them in the local repo
+description: "`.claude/handoff-task.md` / `.claude/handoff-todo.md` stay in the project worktree, never in the shared gitlore submodule; `write-stage.sh`'s `git add -f` versions them locally, anchored on `handoff_root` so a worktree versions its own `.claude/`"
 metadata: 
   node_type: memory
   type: feedback

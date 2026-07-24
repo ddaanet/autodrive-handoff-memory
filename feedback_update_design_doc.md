@@ -13,7 +13,7 @@ pass — don't leave it as an optional follow-up.
 
 **Why:** DESIGN.md is the living decision record; a change that lands in
 code/skill but not in the doc makes the doc lie, and the next reader
-trusts the doc. See [[feedback_design_doc_immutability]] — strata are
+trusts the doc. See [[feedback-design-doc-writing]] — strata are
 dated and additive, so record the new decision as its own dated
 subsection rather than rewriting old rationale.
 
