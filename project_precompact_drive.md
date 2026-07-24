@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-22T19:02:02.694Z
+  modified: 2026-07-24T17:16:15.631Z
 ---
 
 precompact redefined from passive "flush memory, you `/compact`" to active
@@ -129,3 +129,21 @@ The TUI-driving facts the watchers depend on: [[reference_cc_tui_tmux_driving]].
 Plugin skill bodies and `hooks.json` are snapshotted at session start, so
 editing them mid-session does not activate them — see
 [[reference_plugin_reload_session_start]].
+
+**Fifth live run (2026-07-24) reported a false line-2 failure again**, a
+regression on the fix from the third run above. Root cause this time:
+`submit_confirmed_or_fail`'s confirm window was 3×`VERIFY_DELAY` (~1.5s)
+total, but the observed gap between the compaction's summary being ready and
+`compact_boundary` actually landing in the transcript was ~18s — the Enters
+registered and the prompt did arrive, just long after the watcher had already
+given up and recorded a failure. **Fixed:** `submit_confirmed_or_fail` now
+matches `submit_consumed_or_fail`'s two-phase shape — 3 fast retries (Enter +
+check, covers an Enter that never registered), then a long poll up to
+`CONSUME_TIMEOUT` **without** resending Enter (avoids a duplicate submit)
+while waiting for a delayed transcript write. Test coverage in
+`tests/rename-test.bats` reproduces the delayed-landing case with an
+async background writer, timed past the fast-retry phase — which itself
+costs real time, since each `transcript_prompt_count` check spawns a
+python3 subprocess (~60ms/call measured), so a naive short synthetic delay
+in a test can land inside the fast-retry phase by accident rather than
+after it.

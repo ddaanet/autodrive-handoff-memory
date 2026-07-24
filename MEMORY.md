@@ -105,6 +105,7 @@
 - [verify hook threshold claims](ddaanet/feedback_verify_hook_threshold_claims.md) — verify a hook-cited numeric limit against the tool's own source before complying at scale, especially for a broad mechanical edit
 - [gitlore Bash-edit desync](ddaanet/reference_gitlore_bash_edit_desync.md) — compose/sync hooks only fire on Write|Edit tool_name; a Bash-applied MEMORY.md edit desyncs root vs. tier index until the next Write/Edit touch
 - [memory index lines are functional](ddaanet/feedback_memory_index_lines_functional.md) — index lines serve agent-matching AND ambient awareness, not just a pointer; don't mechanically shorten them to hit a byte target, especially an advisory one
+- [bundle memory with source](ddaanet/feedback_bundle_memory_with_source.md) — always commit a memory update in the same parent commit as the source change it documents, not as a separate commit; don't over-apply to unrelated pending work
 - [Handoff release flow (atomic)](project_release_flow.md) — `just release` now ships the plugin AND bumps the marketplace entry atomically (plugin-dev v0.2.0+); needs MARKETPLACE_DIR via .envrc
 - [Release flow naming](feedback_release_flow_naming.md) — name both `handoff` and `claude-plugins` up front when releasing, so auto-mode auth covers the marketplace push
 - [autoname plugin removed](project_autoname_removed.md) — removed entirely (repo, marketplace, local); handoff's write-rename.sh is sole rename path
