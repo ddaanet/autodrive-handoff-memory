@@ -101,3 +101,4 @@
 - [Parse, don't regex, structured formats](ddaanet/parse-dont-regex-structured-formats.md) — use a real parser for YAML/JSON/TOML/HTML, never a hand-rolled regex even for "just one field"; regex is for prose token extraction
 - [Release flow naming](feedback_release_flow_naming.md) — name both `handoff` and `claude-plugins` up front when releasing, so auto-mode auth covers the marketplace push
 - [Handoff files are tree-local](feedback_handoff_tree_local.md) — `.claude/handoff-task.md` / `.claude/handoff-todo.md` stay in the project worktree, never in the shared gitlore submodule; `write-stage.sh`'s `git add -f` versions them locally, anchored on `handoff_root` so a worktree versions its own `.claude/`
+- [compact confirm needs manual Enter](project_compact-confirm-needs-manual-enter.md) — the walker's `/compact` line doesn't always land on its own; open bug, fix later
