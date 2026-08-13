@@ -101,4 +101,4 @@
 - [Parse, don't regex, structured formats](ddaanet/parse-dont-regex-structured-formats.md) — use a real parser for YAML/JSON/TOML/HTML, never a hand-rolled regex even for "just one field"; regex is for prose token extraction
 - [subagent skips @-import expansion](ddaanet/subagent-skips-at-import-expansion.md) — an Agent-tool subagent's claudeMd block omits `@path` imports a real session resolves; verify with `claude -p`, not a subagent
 - [git subtree ensure_clean unscoped](ddaanet/git-subtree-ensure-clean-unscoped.md) — subtree add/pull/push refuse on ANY dirty path via an internal, unbypassable `git diff-index HEAD`; a pathspec fix at the call site can't work around it
-- [compact confirm needs manual Enter](project_compact-confirm-needs-manual-enter.md) — the walker's line submission doesn't always land on its own, seen on `/compact` and `/rename`; open bug, fix later
+- [pane fixtures are captures](project_pane-fixtures-are-captures.md) — editing a walker pane predicate/fixture, or a driven line not landing: `just tui-conformance` is the only check against a real TUI
