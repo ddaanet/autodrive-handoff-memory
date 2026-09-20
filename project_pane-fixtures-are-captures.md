@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: f9d05d38-44c5-4dc6-b0de-23fe83154129
-  modified: 2026-08-13T16:12:52.699Z
+  modified: 2026-09-20T20:58:21.398Z
 ---
 
 The walker's pane predicates in `scripts/_watcher_lib.py` are checked against
@@ -28,5 +28,5 @@ send, and the composer does not always repaint within `VERIFY_DELAY`.
 predicate by reasoning about what the chrome probably looks like — capture it.
 A predicate read in two polarities (confirm *and* bail) inverts silently in
 both directions at once, so widening one can arm the other; check both. See
-`docs/changelog/2026-08-13-predicates-match-the-real-pane.md`, and
-[[green-is-not-evidence]] for the wider class.
+`docs/changelog/2026-08-13-predicates-match-the-real-pane.md`, and the
+`craft:test-discipline` skill for the wider class.
