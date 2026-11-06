@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: f16eeb4b-4407-42c5-b201-01b780af540f
-  modified: 2026-11-05T15:15:39.287Z
+  modified: 2026-11-06T15:58:17.932Z
 ---
 
 The directory portal's Validate (claude.ai/directory/manage/new/plugin) has no CLI or API. `claude plugin validate --profile directory --strict` passed a tree the portal refused, and the Claude binary holds none of the rule codes. Observed 2026-11-05 with CC 2.1.318.
@@ -18,6 +18,9 @@ The directory portal's Validate (claude.ai/directory/manage/new/plugin) has no C
 - A nested `${name%"${name##*[![:space:]]}"}` gave `UNPINNED_NPX` ("Unpinned npx launcher"), with no npx anywhere.
 - An inline multi-line `python3 -c` in `write-guard.sh` gave `COMMAND_PATH_COMPUTED` at `.`, but only with `report-drive-failure.sh` also real. Unexplained: `load-handoff.sh` keeps an inline `python3 -c` and passes.
 - `msg+="."` listed `.` as an unfollowed file.
+- `x="${x:+$x$'\n\n'}$y"` in `load-compact.sh` gave `UNPINNED_NPX` too (2026-11-06); an `if [[ -n … ]]` plus `+=` passed. Both `UNPINNED_NPX` cases are a nested `${…}` expansion, so that shape is the one to suspect; the rule behind it is not known.
 - A word naming `hooks/handoff.ts`, even in a comment, gave the `COMMAND_NAMES_MOD_FILE` hold.
+
+The credential hold (`MCP_FORWARDS_CREDENTIAL_ENV`) is a hold, not a block, and moves rather than clears: rewording the lines it named in `bin/handoff-approved` shifted it to `_drive_lock.py` (an env var named at run time) and `_guard_paths.py`.
 
 The rules tightened after 2026-10-15, so a tree that passed before may now be refused.
