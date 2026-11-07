@@ -1,6 +1,6 @@
 ---
 name: directory-portal-validation
-description: "Plugin directory portal Validate is only reachable in the browser; drive it over CDP, test fixes on pushed refs, and which hook-script shapes trip UNPINNED_NPX or COMMAND_PATH_COMPUTED"
+description: "`claude.ai/directory/manage` Validate, no CLI or API, `claude plugin validate --profile directory` passes what it refuses; drive it over CDP (`tab.js`), test on a pushed ref; `UNPINNED_NPX` \"Unpinned npx launcher\" with no npx, `COMMAND_PATH_COMPUTED` at `.`, `COMMAND_NAMES_MOD_FILE`, `python3 -c` or nested `${x%\"${y}\"}` in a hook script; \"accepted only from Verified organizations\" `LOCAL_CODE_*` blocks (command hooks, mods, `bin/`, scripts), no way to apply"
 metadata:
   node_type: memory
   type: reference
@@ -24,3 +24,5 @@ The directory portal's Validate (claude.ai/directory/manage/new/plugin) has no C
 The credential hold (`MCP_FORWARDS_CREDENTIAL_ENV`) is a hold, not a block, and moves rather than clears: rewording the lines it named in `bin/handoff-approved` shifted it to `_drive_lock.py` (an env var named at run time) and `_guard_paths.py`.
 
 The rules tightened after 2026-10-15, so a tree that passed before may now be refused.
+
+**Blocked since 2026-11-05 for non-Verified organizations.** Submitting refused 0.21.2 on four blocking rules: `LOCAL_CODE_HOOK_COMMAND`, `LOCAL_CODE_MOD`, `LOCAL_CODE_BIN` and `LOCAL_CODE_FILE_TYPE` (any file but Markdown, text, JSON, YAML or an image). Validate before submitting showed none of them. Anthropic designates Verified organizations and there is no way to apply (the portal says so; anthropics/claude-plugins-official#7024 asks how). This plugin cannot drop those parts, so it stays on the `claude-plugins` marketplace and the holds above are moot.
