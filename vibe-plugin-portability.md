@@ -1,6 +1,6 @@
 ---
 name: vibe-plugin-portability
-description: "Mistral Vibe 3.0.1 exposes only `post_agent`/`pre_tool`/`post_tool` hooks (no SessionStart/UserPromptSubmit/PreCompact), reads CLAUDE.md never, expands no `@` refs in AGENTS.md, and has no native memory — so a Claude plugin ports as skills + a plain-file loader line in AGENTS.md, and post_tool `additional_context` is the only mechanical injection"
+description: "Vibe 3.0.1 exposes only `post_agent`/`pre_tool`/`post_tool` hooks (no SessionStart/UserPromptSubmit/PreCompact); the Claude adapter refuses mods and passes hook matchers through unrenamed; AGENTS.md splices verbatim (no `@` import), CLAUDE.md is never read, there is no native memory"
 metadata:
   node_type: memory
   type: reference
